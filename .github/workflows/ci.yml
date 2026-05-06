@@ -1,4 +1,4 @@
-name: Basic CI
+name: Backend Tests
 
 on: [push]
 
@@ -7,14 +7,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - run: npm install -g pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      - run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-      - run: pnpm run dev
+      - name: Run test
+        run: pnpm test
