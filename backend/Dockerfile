@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:20
 
 RUN npm install -g pnpm
 

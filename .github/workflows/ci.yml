@@ -26,7 +26,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with: 
-          version: 8
+          version: 10
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -54,11 +54,11 @@ jobs:
      - name: Setup pnpm
        uses: pnpm/action-setup@v2 
        with:
-        version: 8
+        version: 10
      - name: Setup Node.js
        uses: actions/setup-node@v3
        with: 
-        node-version: 18
+        node-version: 20
         cache: 'pnpm'
         cache-dependency-path: frontend/pnpm-lock.yaml
      - name: Install dependencies
