@@ -1,6 +1,6 @@
 name: MERN CI Pipeline
 
-on: 
+on:
   push:
     branches:
       - main
@@ -25,13 +25,13 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
-        with: 
+        with:
           version: 10
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
           cache-dependency-path: backend/pnpm-lock.yaml
 
       - name: Install dependencies
@@ -39,9 +39,9 @@ jobs:
 
       - name: Run Backend Tests
         run: pnpm test
-  
+
   frontend-build:
-    name: Frontend Build 
+    name: Frontend Build
     runs-on: ubuntu-latest
 
     defaults:
@@ -49,38 +49,50 @@ jobs:
         working-directory: frontend
 
     steps:
-     - name: Checkout Repository
-       uses: actions/checkout@v3
-     - name: Setup pnpm
-       uses: pnpm/action-setup@v2 
-       with:
-        version: 10
-     - name: Setup Node.js
-       uses: actions/setup-node@v3
-       with: 
-        node-version: 20
-        cache: 'pnpm'
-        cache-dependency-path: frontend/pnpm-lock.yaml
-     - name: Install dependencies
-       run: pnpm install --frozen-lockfile 
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-     - name: Build Frontend 
-       run: pnpm build 
-  
+      - name: Build Frontend
+        run: pnpm build
+
   docker-build:
     name: Docker image build
     runs-on: ubuntu-latest
 
     needs:
-      - backend-test 
-      - frontend-build 
-    
-    steps: 
+      - backend-test
+      - frontend-build
+
+    env:
+      TAG: ${{ github.sha }}
+
+    steps:
       - name: Checkout Respository
-        uses: actions/checkout@v3 
+        uses: actions/checkout@v3
 
-      - name: Build Backend Docker Image 
-        run: docker build -t backend:${{ github.sha }} ./backend
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_PASSWORD}}
 
-      - name: Build Frontend Docker Image 
-        run: docker build -t frontend:${{ github.sha }} ./frontend      
+      - name: Build Docker Image
+        run: docker compose build
+
+      - name: Push Backend Docker Image
+        run: docker push rd1wakar/mern-demo-backend:${TAG}
+
+      - name: Push Frontend Docker Image
+        run: docker push rd1wakar/mern-demo-frontend:${TAG}
